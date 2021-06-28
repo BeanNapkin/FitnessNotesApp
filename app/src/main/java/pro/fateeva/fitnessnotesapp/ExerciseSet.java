@@ -1,6 +1,8 @@
 package pro.fateeva.fitnessnotesapp;
 
-public class ExerciseSet {
+import java.io.Serializable;
+
+public class ExerciseSet implements Serializable {
     private String exercise;
     private String repetitions;
     private String weight;
@@ -9,6 +11,9 @@ public class ExerciseSet {
         this.exercise = exercise;
         this.repetitions = repetitions;
         this.weight = weight;
+    }
+
+    public ExerciseSet() {
     }
 
     public String getExercise() {

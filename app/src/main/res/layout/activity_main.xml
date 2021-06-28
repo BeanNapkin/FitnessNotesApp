@@ -8,7 +8,7 @@
     tools:context=".MainActivity"
     android:orientation="vertical">
 
-    <include layout="@layout/toolbar_today" />
+    <include layout="@layout/toolbar" />
 
     <FrameLayout
         android:id="@+id/main"

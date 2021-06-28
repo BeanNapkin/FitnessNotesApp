@@ -17,9 +17,14 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     private List<ExerciseSet> exerciseSetList;
     private final Fragment fragment;
 
+
     public MyAdapter(List<ExerciseSet> exerciseSetList, Fragment fragment) {
         this.exerciseSetList = exerciseSetList;
         this.fragment = fragment;
+    }
+
+    public void setExerciseSetList(List<ExerciseSet> exerciseSetList) {
+        this.exerciseSetList = exerciseSetList;
     }
 
     @NonNull

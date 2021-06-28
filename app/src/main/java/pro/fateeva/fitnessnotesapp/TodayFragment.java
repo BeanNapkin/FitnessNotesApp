@@ -1,9 +1,9 @@
 package pro.fateeva.fitnessnotesapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -15,22 +15,16 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
-import java.util.List;
-
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link TodayFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class TodayFragment extends Fragment {
 
-    public static final String TAG = "TodayFragment";
     public RecyclerView recyclerView;
     private MyAdapter myAdapter;
 
     private static final String ARG_EXERCISESETLIST = "param1";
+
+    private static final String FRAGMENT_NAME = "name";
+    private static final String addNewExerciseFragmentName = "add_new_exercise_fragment_name";
 
     public TodayFragment() {
         // Required empty public constructor
@@ -61,9 +55,20 @@ public class TodayFragment extends Fragment {
     }
 
     @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+
+        switch (id) {
+            case R.id.action_addNewExercise:
+                clickOnAddNewExercise();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onStart() {
         super.onStart();
-
 
         final SerializableExerciseSetList exerciseSetList = (SerializableExerciseSetList) getArguments().getSerializable(ARG_EXERCISESETLIST);
 
@@ -80,5 +85,16 @@ public class TodayFragment extends Fragment {
         myAdapter = new MyAdapter(exerciseSetList.getExerciseSetList(), this);
 
         recyclerView.setAdapter(myAdapter);
+    }
+
+    private void clickOnAddNewExercise() {
+        Intent intent = new Intent(getContext(), MainActivity.class);
+        intent.putExtra(FRAGMENT_NAME, addNewExerciseFragmentName);
+        getContext().startActivity(intent);
+    }
+
+    public void changeExercises(Day day) {
+        myAdapter.setExerciseSetList(day.getExerciseSetList());
+        myAdapter.notifyDataSetChanged();
     }
 }
