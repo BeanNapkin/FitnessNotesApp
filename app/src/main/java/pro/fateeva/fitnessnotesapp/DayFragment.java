@@ -15,25 +15,33 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
-public class TodayFragment extends Fragment {
+import java.util.ArrayList;
+import java.util.Date;
+
+public class DayFragment extends Fragment {
 
     public RecyclerView recyclerView;
     private MyAdapter myAdapter;
 
-    private static final String ARG_EXERCISESETLIST = "param1";
+    private static final String ARG_DATE = "param1";
 
     private static final String FRAGMENT_NAME = "name";
     private static final String addNewExerciseFragmentName = "add_new_exercise_fragment_name";
 
-    public TodayFragment() {
+    private boolean isProgressBarShown;
+
+    private DaySource dayFirebaseSource = new DayFirebaseSourceImpl();
+
+    public DayFragment() {
         // Required empty public constructor
     }
 
-    public static TodayFragment createFragment(Day day) {
-        TodayFragment fragment = new TodayFragment();
+    public static DayFragment createFragment(Date date) {
+        DayFragment fragment = new DayFragment();
         Bundle args = new Bundle();
-        args.putSerializable(ARG_EXERCISESETLIST, new SerializableExerciseSetList(day.getExerciseSetList()));
+        args.putSerializable(ARG_DATE, date);
         fragment.setArguments(args);
         return fragment;
     }
@@ -70,7 +78,9 @@ public class TodayFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-        final SerializableExerciseSetList exerciseSetList = (SerializableExerciseSetList) getArguments().getSerializable(ARG_EXERCISESETLIST);
+        showProgressBar(true);
+
+        final Date date = (Date)getArguments().getSerializable(ARG_DATE);
 
         recyclerView = getView().findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
@@ -82,7 +92,12 @@ public class TodayFragment extends Fragment {
         itemDecoration.setDrawable(getResources().getDrawable(R.drawable.separator, null));
         recyclerView.addItemDecoration(itemDecoration);
 
-        myAdapter = new MyAdapter(exerciseSetList.getExerciseSetList(), this);
+        myAdapter = new MyAdapter(new ArrayList<>(), this);
+
+        dayFirebaseSource.downloadDayFromServer(date, day -> {
+           changeExercises(day);
+           showProgressBar(false);
+        });
 
         recyclerView.setAdapter(myAdapter);
     }
@@ -95,6 +110,24 @@ public class TodayFragment extends Fragment {
 
     public void changeExercises(Day day) {
         myAdapter.setExerciseSetList(day.getExerciseSetList());
-        myAdapter.notifyDataSetChanged();
     }
+
+    public void showProgressBar(boolean isShowing) {
+        isProgressBarShown = isShowing;
+
+        if (getView() != null) {
+            updateProgressBar();
+        }
+    }
+
+    private void updateProgressBar() {
+        ProgressBar progressBar = getView().findViewById(R.id.progressBar);
+
+        if (isProgressBarShown) {
+            progressBar.setVisibility(View.VISIBLE);
+        } else {
+            progressBar.setVisibility(View.INVISIBLE);
+        }
+    }
+
 }

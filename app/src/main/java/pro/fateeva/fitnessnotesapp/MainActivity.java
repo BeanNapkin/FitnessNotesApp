@@ -19,16 +19,14 @@ public class MainActivity extends AppCompatActivity {
     public static final String ADD_NEW_EXERCISE = "new_exercise";
     private static final String addNewExerciseFragmentName = "add_new_exercise_fragment_name";
 
-    TodayFragment todayFragment;
+    DayFragment todayFragment;
+
+    private DaySource daySource = new DayFirebaseSourceImpl();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        day.setDate(new Date());
-        day.addExerciseSet("Приседания", "10", "40");
-        day.addExerciseSet("Отжимания", "10", "40");
 
         initToolbar();
     }
@@ -58,8 +56,8 @@ public class MainActivity extends AppCompatActivity {
         return toolbar;
     }
 
-    private Fragment createTodayFragment() {
-        todayFragment = TodayFragment.createFragment(day);
+    private Fragment createDayFragment() {
+        todayFragment = DayFragment.createFragment(new Date());
         return todayFragment;
     }
 
@@ -74,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
         Fragment fragmentToShow = new Fragment();
 
         if (fragmentName.equals("")) {
-            fragmentToShow = createTodayFragment();
+            fragmentToShow = createDayFragment();
         } else if (fragmentName.equals(addNewExerciseFragmentName)) {
             fragmentToShow = createAddNewExerciseFragment();
         }
@@ -86,6 +84,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void addExerciseSetAndUpdateDay(ExerciseSet exerciseSetToAdd) {
         day.addExerciseSet(exerciseSetToAdd.getExercise(), exerciseSetToAdd.getRepetitions(), exerciseSetToAdd.getWeight());
+        daySource.addOrUpdateDay(day);
         todayFragment.changeExercises(day);
     }
+
 }

@@ -25,6 +25,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
     public void setExerciseSetList(List<ExerciseSet> exerciseSetList) {
         this.exerciseSetList = exerciseSetList;
+        notifyDataSetChanged();
     }
 
     @NonNull
