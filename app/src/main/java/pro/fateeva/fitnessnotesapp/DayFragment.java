@@ -1,23 +1,30 @@
 package pro.fateeva.fitnessnotesapp;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.DatePicker;
 import android.widget.ProgressBar;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 public class DayFragment extends Fragment {
@@ -34,6 +41,10 @@ public class DayFragment extends Fragment {
 
     private DaySource dayFirebaseSource = new DayFirebaseSourceImpl();
 
+    Calendar date = Calendar.getInstance();
+
+    String chosenDayFromCalendar;
+
     public DayFragment() {
         // Required empty public constructor
     }
@@ -49,8 +60,6 @@ public class DayFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-
         View v = inflater.inflate(R.layout.fragment_today, container, false);
         setHasOptionsMenu(true);
         return v;
@@ -70,6 +79,10 @@ public class DayFragment extends Fragment {
             case R.id.action_addNewExercise:
                 clickOnAddNewExercise();
                 return true;
+
+            case R.id.action_chooseDay:
+                clickOnChooseDay();
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -78,9 +91,9 @@ public class DayFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-        showProgressBar(true);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Сегодня");
 
-        final Date date = (Date)getArguments().getSerializable(ARG_DATE);
+        final Date date = (Date) getArguments().getSerializable(ARG_DATE);
 
         recyclerView = getView().findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
@@ -94,18 +107,50 @@ public class DayFragment extends Fragment {
 
         myAdapter = new MyAdapter(new ArrayList<>(), this);
 
-        dayFirebaseSource.downloadDayFromServer(date, day -> {
-           changeExercises(day);
-           showProgressBar(false);
-        });
+        showDay(date);
 
         recyclerView.setAdapter(myAdapter);
+    }
+
+    private void showDay(Date date) {
+        showProgressBar(true);
+        dayFirebaseSource.downloadDayFromServer(date, day -> {
+            changeExercises(day);
+            showProgressBar(false);
+        });
     }
 
     private void clickOnAddNewExercise() {
         Intent intent = new Intent(getContext(), MainActivity.class);
         intent.putExtra(FRAGMENT_NAME, addNewExerciseFragmentName);
         getContext().startActivity(intent);
+    }
+
+    private void clickOnChooseDay() {
+        new DatePickerDialog(getActivity(), d,
+                date.get(Calendar.YEAR),
+                date.get(Calendar.MONTH),
+                date.get(Calendar.DAY_OF_MONTH))
+                .show();
+    }
+
+    DatePickerDialog.OnDateSetListener d = new DatePickerDialog.OnDateSetListener() {
+        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+            date.set(Calendar.YEAR, year);
+            date.set(Calendar.MONTH, monthOfYear);
+            date.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+            setInitialDate();
+        }
+    };
+
+    private void setInitialDate() {
+        chosenDayFromCalendar = DateUtils.formatDateTime(getActivity(),
+                date.getTimeInMillis(),
+                DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_YEAR);
+
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(chosenDayFromCalendar);
+
+        showDay(date.getTime());
     }
 
     public void changeExercises(Day day) {
@@ -129,5 +174,4 @@ public class DayFragment extends Fragment {
             progressBar.setVisibility(View.INVISIBLE);
         }
     }
-
 }
