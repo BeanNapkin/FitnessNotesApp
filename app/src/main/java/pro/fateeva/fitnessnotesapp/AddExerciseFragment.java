@@ -19,6 +19,7 @@ public class AddExerciseFragment extends Fragment {
     public static final String ADD_NEW_EXERCISE = "new_exercise";
     private static final String FRAGMENT_NAME = "name";
 
+
     EditText exercise;
     EditText repetitions;
     EditText weight;
@@ -77,8 +78,8 @@ public class AddExerciseFragment extends Fragment {
         exerciseSet.setWeight((weight).getText().toString());
 
         Intent intent = new Intent(getContext(), MainActivity.class);
-        intent.putExtra(FRAGMENT_NAME, "");
+        intent.putExtra(FRAGMENT_NAME, FragmentNames.TODAY_FRAGMENT);
         intent.putExtra(ADD_NEW_EXERCISE, exerciseSet);
-        getContext().startActivity(intent);
+        requireContext().startActivity(intent);
     };
 }

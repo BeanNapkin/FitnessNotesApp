@@ -13,10 +13,10 @@ import java.util.Date;
 public class MainActivity extends AppCompatActivity {
 
     private Day day = new Day();
-    private static String fragmentFromIntent = "";
 
-    private static final String FRAGMENT_NAME = "name";
+    public static final String FRAGMENT_NAME = "name";
     public static final String ADD_NEW_EXERCISE = "new_exercise";
+    private static final String TODAY_FRAGMENT = "today_fragment";
     private static final String addNewExerciseFragmentName = "add_new_exercise_fragment_name";
 
     DayFragment todayFragment;
@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        showFragment(fragmentFromIntent);
+        showFragment(FragmentNames.SIGN_IN_FRAGMENT, null);
     }
 
     @Override
@@ -42,12 +42,13 @@ public class MainActivity extends AppCompatActivity {
         super.onNewIntent(intent);
 
         ExerciseSet exerciseSetToAdd = (ExerciseSet) intent.getSerializableExtra(ADD_NEW_EXERCISE);
+
         if (exerciseSetToAdd != null) {
             addExerciseSetAndUpdateDay(exerciseSetToAdd);
         }
 
-        fragmentFromIntent = (String) intent.getSerializableExtra(FRAGMENT_NAME);
-        showFragment(fragmentFromIntent);
+        FragmentNames fragmentFromIntent = (FragmentNames) intent.getSerializableExtra(FRAGMENT_NAME);
+        showFragment(fragmentFromIntent, intent);
     }
 
     private Toolbar initToolbar() {
@@ -56,8 +57,8 @@ public class MainActivity extends AppCompatActivity {
         return toolbar;
     }
 
-    private Fragment createDayFragment() {
-        todayFragment = DayFragment.createFragment(new Date());
+    private Fragment createDayFragment(String accountId) {
+        todayFragment = DayFragment.createFragment(new Date(), accountId);
         return todayFragment;
     }
 
@@ -66,15 +67,22 @@ public class MainActivity extends AppCompatActivity {
         return addExerciseFragment;
     }
 
-    private void showFragment(String fragmentName) {
+    private void showFragment(FragmentNames fragmentName, Intent intent) {
 
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        Fragment fragmentToShow = new Fragment();
+        Fragment fragmentToShow = null;
 
-        if (fragmentName.equals("")) {
-            fragmentToShow = createDayFragment();
-        } else if (fragmentName.equals(addNewExerciseFragmentName)) {
-            fragmentToShow = createAddNewExerciseFragment();
+        switch (fragmentName){
+            case TODAY_FRAGMENT:
+                String accountId = intent.getStringExtra(SignInFragment.ACCOUNT_ID);
+                fragmentToShow = createDayFragment(accountId);
+                break;
+            case ADD_NEW_EXERCISE_FRAGMENT:
+                fragmentToShow = createAddNewExerciseFragment();
+                break;
+            case SIGN_IN_FRAGMENT:
+                fragmentToShow = SignInFragment.createFragment();
+                break;
         }
 
         fragmentTransaction.replace(R.id.main, fragmentToShow, null);
@@ -87,5 +95,4 @@ public class MainActivity extends AppCompatActivity {
         daySource.addOrUpdateDay(day);
         todayFragment.changeExercises(day);
     }
-
 }

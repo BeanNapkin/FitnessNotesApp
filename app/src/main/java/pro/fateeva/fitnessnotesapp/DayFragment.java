@@ -29,13 +29,11 @@ import java.util.Date;
 
 public class DayFragment extends Fragment {
 
+    private static final String ARG_ACCOUNT_ID = "account_id";
+    private static final String ARG_DATE = "date";
+
     public RecyclerView recyclerView;
     private MyAdapter myAdapter;
-
-    private static final String ARG_DATE = "param1";
-
-    private static final String FRAGMENT_NAME = "name";
-    private static final String addNewExerciseFragmentName = "add_new_exercise_fragment_name";
 
     private boolean isProgressBarShown;
 
@@ -49,10 +47,11 @@ public class DayFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static DayFragment createFragment(Date date) {
+    public static DayFragment createFragment(Date date, String accountId) {
         DayFragment fragment = new DayFragment();
         Bundle args = new Bundle();
         args.putSerializable(ARG_DATE, date);
+        args.putSerializable(ARG_ACCOUNT_ID, accountId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -122,12 +121,12 @@ public class DayFragment extends Fragment {
 
     private void clickOnAddNewExercise() {
         Intent intent = new Intent(getContext(), MainActivity.class);
-        intent.putExtra(FRAGMENT_NAME, addNewExerciseFragmentName);
-        getContext().startActivity(intent);
+        intent.putExtra(MainActivity.FRAGMENT_NAME, FragmentNames.ADD_NEW_EXERCISE_FRAGMENT);
+        requireContext().startActivity(intent);
     }
 
     private void clickOnChooseDay() {
-        new DatePickerDialog(getActivity(), d,
+        new DatePickerDialog(requireContext(), d,
                 date.get(Calendar.YEAR),
                 date.get(Calendar.MONTH),
                 date.get(Calendar.DAY_OF_MONTH))

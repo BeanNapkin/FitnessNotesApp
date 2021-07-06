@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "666140910335-r814i79jp88lo04g7jq69nuiq27a6gp1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "pro.fateeva.fitnessnotesapp",
+            "certificate_hash": "2cdd7a9a1abb026f5c14304389f0de067a13e935"
+          }
+        },
+        {
           "client_id": "666140910335-1tp62vmsfi1dcc145gj9vab3j017jea3.apps.googleusercontent.com",
           "client_type": 3
         }

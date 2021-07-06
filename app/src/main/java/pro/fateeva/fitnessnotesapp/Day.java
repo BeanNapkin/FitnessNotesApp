@@ -9,6 +9,7 @@ import java.util.List;
 public class Day {
 
     private Date date = new Date();
+    private String clientId;
     private String id;
     private List<ExerciseSet> exerciseSetList = new ArrayList<>();
 
