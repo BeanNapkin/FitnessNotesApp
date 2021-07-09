@@ -14,12 +14,13 @@ public class DayDataMapping {
     private static final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     public static class Fields {
+        public static final String ACCOUNT_ID = "account_id";
         public static final String DATE = "date";
         public static final String ID = "id";
         public static final String EXERCISE_SET_LIST = "exercises";
     }
 
-    public static String dateToString(Date date){
+    public static String dateToString(Date date) {
         return dateFormat.format(date);
     }
 
@@ -43,6 +44,7 @@ public class DayDataMapping {
         }
 
         day.setId((String) doc.get(Fields.ID));
+        day.setAccountId((String) doc.get(Fields.ACCOUNT_ID));
         day.setExerciseSetList(exerciseSetList);
 
         return day;
@@ -52,6 +54,8 @@ public class DayDataMapping {
         Map<String, Object> document = new HashMap<>();
 
         document.put(Fields.DATE, dateFormat.format(day.getDate()));
+
+        document.put(Fields.ACCOUNT_ID, day.getAccountId());
 
         ArrayList<Map<String, Object>> mappedExercises = new ArrayList<>();
 

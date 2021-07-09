@@ -7,12 +7,9 @@ import java.util.Date;
 
 public interface DaySource extends Serializable {
 
-    void downloadDayFromServer(Date date, Consumer<Day> onDownloaded);
+    void downloadDayFromServer(Date date, String accountId, Consumer<Day> onDownloaded);
 
-    void addOrUpdateDay(Day day);
+    void addOrUpdateDay(Consumer<Day> onSaved);
 
-    void deleteDay(String date);
-
-    Day getDay(String date);
-
+    Day getCurrentDay();
 }

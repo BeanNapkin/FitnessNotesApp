@@ -20,6 +20,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 
+import pro.fateeva.fitnessnotesapp.services.ServiceLocator;
+
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link SignInFragment#createFragment} factory method to
@@ -30,8 +32,6 @@ public class SignInFragment extends Fragment {
     private GoogleSignInClient mGoogleSignInClient;
     private int RC_SIGN_IN = 1000;
     private static final String TAG = "tag";
-
-    public static final String ACCOUNT_ID = "account";
 
     public SignInFragment() {
         // Required empty public constructor
@@ -91,7 +91,7 @@ public class SignInFragment extends Fragment {
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
-            account.getId();
+            ServiceLocator.getAccountSource().setAccountID(account.getId());
             // Signed in successfully, show authenticated UI.
             showDay(account);
         } catch (ApiException e) {
@@ -106,7 +106,6 @@ public class SignInFragment extends Fragment {
 
     private void showDay(GoogleSignInAccount account){
         Intent intent = new Intent(getContext(), MainActivity.class);
-        intent.putExtra(ACCOUNT_ID, account.getId());
         intent.putExtra(MainActivity.FRAGMENT_NAME, FragmentNames.TODAY_FRAGMENT);
         requireContext().startActivity(intent);
     }

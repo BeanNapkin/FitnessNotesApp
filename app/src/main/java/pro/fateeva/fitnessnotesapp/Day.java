@@ -2,14 +2,15 @@ package pro.fateeva.fitnessnotesapp;
 
 import androidx.annotation.NonNull;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class Day {
+public class Day implements Serializable {
 
     private Date date = new Date();
-    private String clientId;
+    private String accountId;
     private String id;
     private List<ExerciseSet> exerciseSetList = new ArrayList<>();
 
@@ -40,6 +41,14 @@ public class Day {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getAccountId() {
+        return accountId;
+    }
+
+    public void setAccountId(String accountId) {
+        this.accountId = accountId;
     }
 
     @NonNull

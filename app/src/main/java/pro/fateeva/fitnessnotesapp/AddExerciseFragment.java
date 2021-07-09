@@ -14,6 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
+import pro.fateeva.fitnessnotesapp.services.ServiceLocator;
+
 public class AddExerciseFragment extends Fragment {
 
     public static final String ADD_NEW_EXERCISE = "new_exercise";
@@ -23,6 +25,8 @@ public class AddExerciseFragment extends Fragment {
     EditText exercise;
     EditText repetitions;
     EditText weight;
+
+    private DaySource daySource = ServiceLocator.getDaySource();
 
     public AddExerciseFragment() {
         // Required empty public constructor
@@ -71,6 +75,7 @@ public class AddExerciseFragment extends Fragment {
     }
 
     private void clickOnSaveNewExercise(){
+
         ExerciseSet exerciseSet = new ExerciseSet();
 
         exerciseSet.setExercise((exercise).getText().toString());
@@ -79,7 +84,8 @@ public class AddExerciseFragment extends Fragment {
 
         Intent intent = new Intent(getContext(), MainActivity.class);
         intent.putExtra(FRAGMENT_NAME, FragmentNames.TODAY_FRAGMENT);
-        intent.putExtra(ADD_NEW_EXERCISE, exerciseSet);
-        requireContext().startActivity(intent);
+
+        daySource.getCurrentDay().addExerciseSet(exerciseSet.getExercise(), exerciseSet.getRepetitions(), exerciseSet.getWeight());
+        daySource.addOrUpdateDay(day -> requireContext().startActivity(intent));
     };
 }

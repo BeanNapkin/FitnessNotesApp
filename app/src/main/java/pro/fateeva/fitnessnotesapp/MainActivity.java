@@ -10,18 +10,16 @@ import android.os.Bundle;
 
 import java.util.Date;
 
+import pro.fateeva.fitnessnotesapp.services.DayFirebaseSourceImpl;
+import pro.fateeva.fitnessnotesapp.services.ServiceLocator;
+
 public class MainActivity extends AppCompatActivity {
 
-    private Day day = new Day();
-
     public static final String FRAGMENT_NAME = "name";
-    public static final String ADD_NEW_EXERCISE = "new_exercise";
-    private static final String TODAY_FRAGMENT = "today_fragment";
-    private static final String addNewExerciseFragmentName = "add_new_exercise_fragment_name";
 
     DayFragment todayFragment;
 
-    private DaySource daySource = new DayFirebaseSourceImpl();
+    private DaySource daySource = ServiceLocator.getDaySource();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,21 +32,15 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        showFragment(FragmentNames.SIGN_IN_FRAGMENT, null);
+        showFragment(FragmentNames.SIGN_IN_FRAGMENT);
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
 
-        ExerciseSet exerciseSetToAdd = (ExerciseSet) intent.getSerializableExtra(ADD_NEW_EXERCISE);
-
-        if (exerciseSetToAdd != null) {
-            addExerciseSetAndUpdateDay(exerciseSetToAdd);
-        }
-
         FragmentNames fragmentFromIntent = (FragmentNames) intent.getSerializableExtra(FRAGMENT_NAME);
-        showFragment(fragmentFromIntent, intent);
+        showFragment(fragmentFromIntent);
     }
 
     private Toolbar initToolbar() {
@@ -57,8 +49,8 @@ public class MainActivity extends AppCompatActivity {
         return toolbar;
     }
 
-    private Fragment createDayFragment(String accountId) {
-        todayFragment = DayFragment.createFragment(new Date(), accountId);
+    private Fragment createDayFragment() {
+        todayFragment = DayFragment.createFragment(new Date());
         return todayFragment;
     }
 
@@ -67,15 +59,14 @@ public class MainActivity extends AppCompatActivity {
         return addExerciseFragment;
     }
 
-    private void showFragment(FragmentNames fragmentName, Intent intent) {
+    private void showFragment(FragmentNames fragmentName) {
 
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         Fragment fragmentToShow = null;
 
         switch (fragmentName){
             case TODAY_FRAGMENT:
-                String accountId = intent.getStringExtra(SignInFragment.ACCOUNT_ID);
-                fragmentToShow = createDayFragment(accountId);
+                fragmentToShow = createDayFragment();
                 break;
             case ADD_NEW_EXERCISE_FRAGMENT:
                 fragmentToShow = createAddNewExerciseFragment();
@@ -90,9 +81,4 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.commit();
     }
 
-    private void addExerciseSetAndUpdateDay(ExerciseSet exerciseSetToAdd) {
-        day.addExerciseSet(exerciseSetToAdd.getExercise(), exerciseSetToAdd.getRepetitions(), exerciseSetToAdd.getWeight());
-        daySource.addOrUpdateDay(day);
-        todayFragment.changeExercises(day);
-    }
 }

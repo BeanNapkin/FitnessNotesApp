@@ -1,4 +1,4 @@
-package pro.fateeva.fitnessnotesapp;
+package pro.fateeva.fitnessnotesapp.services;
 
 import android.util.Log;
 
@@ -11,6 +11,10 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.Date;
 import java.util.Iterator;
 
+import pro.fateeva.fitnessnotesapp.Day;
+import pro.fateeva.fitnessnotesapp.DayDataMapping;
+import pro.fateeva.fitnessnotesapp.DaySource;
+
 public class DayFirebaseSourceImpl implements DaySource {
 
     public static final String DAY = "day";
@@ -20,18 +24,20 @@ public class DayFirebaseSourceImpl implements DaySource {
 
     private CollectionReference collection = db.collection(DAY);
 
-    final private Day day = new Day();
+    private Day day = new Day();
+
+    DayFirebaseSourceImpl() {
+    }
 
     @Override
-    public void downloadDayFromServer(Date date, Consumer<Day> onDownloaded) {
+    public void downloadDayFromServer(Date date, String accountId, Consumer<Day> onDownloaded) {
         collection
+                .whereEqualTo(DayDataMapping.Fields.ACCOUNT_ID, accountId)
                 .whereEqualTo(DayDataMapping.Fields.DATE, DayDataMapping.dateToString(date))
                 .get()
                 .addOnCompleteListener((task) -> {
                     if (task.isSuccessful()) {
                         day.getExerciseSetList().clear();
-
-                        Day day;
 
                         Iterator<QueryDocumentSnapshot> iterator = task.getResult().iterator();
 
@@ -39,6 +45,7 @@ public class DayFirebaseSourceImpl implements DaySource {
                             day = DayDataMapping.toDay(iterator.next().getData());
                         } else {
                             day = new Day();
+                            day.setAccountId(accountId);
                         }
 
                         onDownloaded.accept(day);
@@ -49,25 +56,24 @@ public class DayFirebaseSourceImpl implements DaySource {
     }
 
     @Override
-    public void addOrUpdateDay(Day day) {
+    public void addOrUpdateDay(Consumer<Day> onSaved) {
+
+        if (day.getAccountId() == null || "".equals(day.getAccountId())) {
+            throw new IllegalArgumentException("Account ID is required");
+        }
 
         if (day.getId() == null || "".equals(day.getId())) {
             collection.add(DayDataMapping.toDocument(day)).addOnSuccessListener(documentReference -> day.setId(documentReference.getId()))
-                    .addOnFailureListener(e -> Log.e(null, "error saving " + day, e));
+                    .addOnFailureListener(e -> Log.e(null, "error saving " + day, e)).addOnCompleteListener(task -> onSaved.accept(day));
         } else {
             collection.document(day.getId()).set(DayDataMapping.toDocument(day))
-                    .addOnFailureListener(e -> Log.e(null, "error updating " + day, e));
+                    .addOnFailureListener(e -> Log.e(null, "error updating " + day, e)).addOnCompleteListener(task -> onSaved.accept(day));
         }
     }
 
     @Override
-    public void deleteDay(String date) {
-
-    }
-
-    @Override
-    public Day getDay(String date) {
-        return null;
+    public Day getCurrentDay() {
+        return day;
     }
 
 }

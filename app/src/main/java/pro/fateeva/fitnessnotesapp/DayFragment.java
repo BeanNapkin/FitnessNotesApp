@@ -21,15 +21,15 @@ import android.view.ViewGroup;
 import android.widget.DatePicker;
 import android.widget.ProgressBar;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
+import pro.fateeva.fitnessnotesapp.services.DayFirebaseSourceImpl;
+import pro.fateeva.fitnessnotesapp.services.ServiceLocator;
+
 public class DayFragment extends Fragment {
 
-    private static final String ARG_ACCOUNT_ID = "account_id";
     private static final String ARG_DATE = "date";
 
     public RecyclerView recyclerView;
@@ -37,21 +37,22 @@ public class DayFragment extends Fragment {
 
     private boolean isProgressBarShown;
 
-    private DaySource dayFirebaseSource = new DayFirebaseSourceImpl();
+    private DaySource dayFirebaseSource = ServiceLocator.getDaySource();
 
-    Calendar date = Calendar.getInstance();
+    private Calendar date = Calendar.getInstance();
 
-    String chosenDayFromCalendar;
+    private String chosenDayFromCalendar;
+
+    private String accountId;
 
     public DayFragment() {
         // Required empty public constructor
     }
 
-    public static DayFragment createFragment(Date date, String accountId) {
+    public static DayFragment createFragment(Date date) {
         DayFragment fragment = new DayFragment();
         Bundle args = new Bundle();
         args.putSerializable(ARG_DATE, date);
-        args.putSerializable(ARG_ACCOUNT_ID, accountId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -93,6 +94,7 @@ public class DayFragment extends Fragment {
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Сегодня");
 
         final Date date = (Date) getArguments().getSerializable(ARG_DATE);
+        accountId = ServiceLocator.getAccountSource().getAccountId();
 
         recyclerView = getView().findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
@@ -106,14 +108,14 @@ public class DayFragment extends Fragment {
 
         myAdapter = new MyAdapter(new ArrayList<>(), this);
 
-        showDay(date);
+        showDay(date, accountId);
 
         recyclerView.setAdapter(myAdapter);
     }
 
-    private void showDay(Date date) {
+    private void showDay(Date date, String accountId) {
         showProgressBar(true);
-        dayFirebaseSource.downloadDayFromServer(date, day -> {
+        dayFirebaseSource.downloadDayFromServer(date, accountId, day -> {
             changeExercises(day);
             showProgressBar(false);
         });
@@ -149,7 +151,7 @@ public class DayFragment extends Fragment {
 
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(chosenDayFromCalendar);
 
-        showDay(date.getTime());
+        showDay(date.getTime(), accountId);
     }
 
     public void changeExercises(Day day) {
