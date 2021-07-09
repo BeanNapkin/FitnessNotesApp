@@ -59,17 +59,21 @@ public class MainActivity extends AppCompatActivity {
         return addExerciseFragment;
     }
 
-    private void showFragment(FragmentNames fragmentName) {
+    private Fragment createMostUsedExerciseFragment() {
+        MostUsedExerciseFragment mostUsedExerciseFragment = MostUsedExerciseFragment.createFragment();
+        return mostUsedExerciseFragment;
+    }
 
+    private void showFragment(FragmentNames fragmentName) {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         Fragment fragmentToShow = null;
 
-        switch (fragmentName){
+        switch (fragmentName) {
             case TODAY_FRAGMENT:
                 fragmentToShow = createDayFragment();
                 break;
-            case ADD_NEW_EXERCISE_FRAGMENT:
-                fragmentToShow = createAddNewExerciseFragment();
+            case MOST_USED_EXERCISES_FRAGMENT:
+                fragmentToShow = createMostUsedExerciseFragment();
                 break;
             case SIGN_IN_FRAGMENT:
                 fragmentToShow = SignInFragment.createFragment();
@@ -80,5 +84,4 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
-
 }

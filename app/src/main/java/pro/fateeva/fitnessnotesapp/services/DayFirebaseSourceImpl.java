@@ -42,7 +42,9 @@ public class DayFirebaseSourceImpl implements DaySource {
                         Iterator<QueryDocumentSnapshot> iterator = task.getResult().iterator();
 
                         if (iterator.hasNext()) {
-                            day = DayDataMapping.toDay(iterator.next().getData());
+                            QueryDocumentSnapshot doc = iterator.next();
+                            doc.getId();
+                            day = DayDataMapping.toDay(doc);
                         } else {
                             day = new Day();
                             day.setAccountId(accountId);

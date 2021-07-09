@@ -1,5 +1,7 @@
 package pro.fateeva.fitnessnotesapp;
 
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -16,7 +18,6 @@ public class DayDataMapping {
     public static class Fields {
         public static final String ACCOUNT_ID = "account_id";
         public static final String DATE = "date";
-        public static final String ID = "id";
         public static final String EXERCISE_SET_LIST = "exercises";
     }
 
@@ -24,11 +25,11 @@ public class DayDataMapping {
         return dateFormat.format(date);
     }
 
-    public static Day toDay(Map<String, Object> doc) {
-
+    public static Day toDay(QueryDocumentSnapshot doc) {
+        Map<String, Object> data = doc.getData();
         List<ExerciseSet> exerciseSetList = new ArrayList<>();
 
-        List<Map<String, Object>> exercises = (List<Map<String, Object>>) doc.get(Fields.EXERCISE_SET_LIST);
+        List<Map<String, Object>> exercises = (List<Map<String, Object>>) data.get(Fields.EXERCISE_SET_LIST);
 
         for (Map<String, Object> exercise : exercises) {
             exerciseSetList.add(ExerciseMapper.toExerciseSet(exercise));
@@ -36,15 +37,15 @@ public class DayDataMapping {
 
         Day day = new Day();
 
-        String dateString = (String) doc.get(Fields.DATE);
+        String dateString = (String) data.get(Fields.DATE);
         try {
             day.setDate(dateFormat.parse(dateString));
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
-        day.setId((String) doc.get(Fields.ID));
-        day.setAccountId((String) doc.get(Fields.ACCOUNT_ID));
+        day.setId(doc.getId());
+        day.setAccountId((String) data.get(Fields.ACCOUNT_ID));
         day.setExerciseSetList(exerciseSetList);
 
         return day;

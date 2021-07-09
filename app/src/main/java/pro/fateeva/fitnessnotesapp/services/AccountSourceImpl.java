@@ -1,4 +1,6 @@
-package pro.fateeva.fitnessnotesapp;
+package pro.fateeva.fitnessnotesapp.services;
+
+import pro.fateeva.fitnessnotesapp.AccountSource;
 
 public class AccountSourceImpl implements AccountSource {
 

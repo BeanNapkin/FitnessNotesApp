@@ -67,7 +67,7 @@ public class AddExerciseFragment extends Fragment {
         int id = item.getItemId();
 
         switch (id) {
-            case R.id.action_saveNewExercise:
+            case R.id.action_save:
                 clickOnSaveNewExercise();
                 return true;
         }

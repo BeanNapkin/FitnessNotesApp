@@ -1,7 +1,6 @@
 package pro.fateeva.fitnessnotesapp.services;
 
 import pro.fateeva.fitnessnotesapp.AccountSource;
-import pro.fateeva.fitnessnotesapp.AccountSourceImpl;
 import pro.fateeva.fitnessnotesapp.DaySource;
 
 public class ServiceLocator {

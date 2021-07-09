@@ -123,7 +123,7 @@ public class DayFragment extends Fragment {
 
     private void clickOnAddNewExercise() {
         Intent intent = new Intent(getContext(), MainActivity.class);
-        intent.putExtra(MainActivity.FRAGMENT_NAME, FragmentNames.ADD_NEW_EXERCISE_FRAGMENT);
+        intent.putExtra(MainActivity.FRAGMENT_NAME, FragmentNames.MOST_USED_EXERCISES_FRAGMENT);
         requireContext().startActivity(intent);
     }
 
